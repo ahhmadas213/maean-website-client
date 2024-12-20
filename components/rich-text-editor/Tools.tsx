@@ -4,7 +4,6 @@ import {
   BiUnderline,
   BiListUl,
   BiListOl,
-  BiCode,
   BiStrikethrough,
   BiAlignLeft,
   BiAlignMiddle,
@@ -92,6 +91,7 @@ const tools = [
 
 interface Props {
   editor: Editor | null;
+  onImageSelecttion?(): void
 }
 
 const chainMethod = (editor: Editor | null, command: (chain: ChainedCommands) => ChainedCommands) => {
@@ -99,7 +99,7 @@ const chainMethod = (editor: Editor | null, command: (chain: ChainedCommands) =>
   command(editor.chain()).run();
 };
 
-const Tools = ({ editor }: Props) => {
+const Tools = ({ editor, onImageSelecttion }: Props) => {
   const getTaskHandler = (task: string) => {
     switch (task) {
       case "h1":
@@ -129,7 +129,7 @@ const Tools = ({ editor }: Props) => {
       case "left":
         return () => chainMethod(editor, (chain) => chain.setTextAlign('left'));
       case "image":
-        return () => chainMethod(editor, (chain) => chain.insertImage({ src: '', alt: '' }));   
+        return onImageSelecttion ? onImageSelecttion : () => {};
       default:
         return () => {};
     }
@@ -178,7 +178,7 @@ const Tools = ({ editor }: Props) => {
         <ToolButton
           key={tool.task}
           active={isActive(tool.task)}
-          onClick={getTaskHandler(tool.task)}
+          onClick={tool.task === 'image' ? (onImageSelecttion ? onImageSelecttion : () => {}) : getTaskHandler(tool.task)}
           icon={tool.icon}
           label={tool.label}
         />

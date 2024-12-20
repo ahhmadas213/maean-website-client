@@ -1,5 +1,5 @@
 'use client'
-import React, { FC } from 'react'
+import React, { FC, useState, useEffect } from 'react'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit';
 import Tools from './rich-text-editor/Tools';
@@ -8,6 +8,7 @@ import TextAlign from '@tiptap/extension-text-align'
 import Placeholder from '@tiptap/extension-placeholder';
 import OrderedList from '@tiptap/extension-ordered-list'
 import Heading from '@tiptap/extension-heading'
+import ImageGallery from './rich-text-editor/ImageGallery';
 
 const extensions = [StarterKit.configure({
   heading: false,
@@ -36,7 +37,36 @@ Heading.configure({
 })
 ]
 
-const RichTextEditor: FC = () => {
+interface Props {
+  setContent(value: string): void
+  setImages(images: { url: string; fileName: string }[]): void
+}
+
+const RichTextEditor: FC<Props> = ({setContent, setImages}) => {
+
+	const [showImageGallery, setShowImageGallery] = useState(false);
+	const [isClient, setIsClient] = useState(false);
+  
+  const [uploadedImages, setUploadedImages] = useState<{ url: string; fileName: string }[]>([]);
+  
+  
+  const setImagesHandler = (images: { url: string; fileName: string }[]) => {
+    const newImages = [...uploadedImages, ...images];
+    setUploadedImages(newImages);
+    setImages(newImages);
+  };
+
+  const setContentHandler = () => {
+  if (editor) {
+    const content = editor.getHTML();
+    setContent(content);
+  }
+};
+
+
+  
+
+// Add an onUpdate handler to the editor configuration
   const editor = useEditor({
     extensions,
     editorProps: {
@@ -45,24 +75,46 @@ const RichTextEditor: FC = () => {
         dir: 'rtl',
       },
     },
-  });
+    onUpdate: ({ editor }) => {
+      setContent(editor.getHTML());
+    }
+});
+
+
+  useEffect(() => {
+    return () => {
+      editor?.destroy();
+    };
+  }, [editor]);
+
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
 
   return (
-    <div className='flex flex-col h-full' dir="rtl">
+	<div>
+  <div className='h-screen flex flex-col' dir="rtl">
       <div className="sticky top-0 bg-white z-50 border-b">
         <div className="max-w-4xl mx-auto w-full">
-          <Tools editor={editor}/>
+          <Tools editor={editor} onImageSelecttion={() => setShowImageGallery(true)}/>
         </div>
       </div>
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 ">
         <div className="max-w-4xl mx-auto px-4">
           <EditorContent 
+            onChange={setContentHandler}
             editor={editor}
-            className="min-h-[300px] [&_.is-editor-empty]:before:text-gray-400 [&_.is-editor-empty]:before:float-right [&_.is-editor-empty]:before:content-[attr(data-placeholder)] [&_.is-editor-empty]:before:pointer-events-none"
+            className="h-full [&_.is-editor-empty]:before:text-gray-400 [&_.is-editor-empty]:before:float-right [&_.is-editor-empty]:before:content-[attr(data-placeholder)] [&_.is-editor-empty]:before:pointer-events-none"
           />
         </div>
       </div>
     </div>
+
+		{isClient && <ImageGallery onImageUpload={setImagesHandler} visible={showImageGallery} onClose={setShowImageGallery} />}
+		
+	</div> 
   )
 }
 

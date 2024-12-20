@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl">
       <body
-        className={` ${cairo.className} antialiased`}
+        className={`${cairo.className} antialiased`}
       >
         {children}
       </body>

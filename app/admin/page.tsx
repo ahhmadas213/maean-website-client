@@ -1,18 +1,18 @@
 'use client'
-import RichTextEditor from '@/components/RichTextEditor'
-import React, { useCallback } from 'react'
+// import RichTextEditor from '@/components/RichTextEditor'
+// import React, { useCallback } from 'react'
 
 const Admin = () => {
-  const [content, setContent] = React.useState('')
+  // const [content, setContent] = React.useState('')
 
-  const handleEditorChange = useCallback((value: string) => {
-    setContent(value);
-  }, []);
+  // const handleEditorChange = useCallback((value: string) => {
+  //   setContent(value);
+  // }, []);
 
-  const handleImageUpload = useCallback(async () => {
-    // Implement image upload logic here
-    return '';
-  }, []);
+  // const handleImageUpload = useCallback(async () => {
+  //   // Implement image upload logic here
+  //   return '';
+  // }, []);
 
   return (
     <div>
@@ -23,6 +23,8 @@ const Admin = () => {
           onChange={handleEditorChange} 
           onImageUpload={handleImageUpload} 
         /> */}
+
+        this is an admin page
       </div>
     </div>
   )
