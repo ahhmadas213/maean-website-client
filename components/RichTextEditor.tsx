@@ -38,17 +38,30 @@ Heading.configure({
 ]
 
 interface Props {
-  setContent(value: string): void
-  setImages(images: { url: string; fileName: string }[]): void
-}
+    setContent(value: string): void
+    setImages(images: { url: string; fileName: string }[]): void
+  }
+
 
 const RichTextEditor: FC<Props> = ({setContent, setImages}) => {
 
 	const [showImageGallery, setShowImageGallery] = useState(false);
-	const [isClient, setIsClient] = useState(false);
   
   const [uploadedImages, setUploadedImages] = useState<{ url: string; fileName: string }[]>([]);
   
+  // Add an onUpdate handler to the editor configuration
+const editor = useEditor({
+  extensions,
+  editorProps: {
+   attributes: {
+    class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl focus:outline-none rtl prose-headings:font-cairo prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl prose-h4:text-xl',
+    dir: 'rtl',
+   },
+ },
+  onUpdate: ({ editor }) => {
+   setContent(editor.getHTML());
+  }
+ });
   
   const setImagesHandler = (images: { url: string; fileName: string }[]) => {
     const newImages = [...uploadedImages, ...images];
@@ -63,35 +76,11 @@ const RichTextEditor: FC<Props> = ({setContent, setImages}) => {
   }
 };
 
-
-  
-
-// Add an onUpdate handler to the editor configuration
-  const editor = useEditor({
-    extensions,
-    editorProps: {
-      attributes: {
-        class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl focus:outline-none rtl prose-headings:font-cairo prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl prose-h4:text-xl',
-        dir: 'rtl',
-      },
-    },
-    onUpdate: ({ editor }) => {
-      setContent(editor.getHTML());
-    }
-});
-
-
   useEffect(() => {
     return () => {
       editor?.destroy();
     };
   }, [editor]);
-
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
 
   return (
 	<div>
@@ -112,7 +101,7 @@ const RichTextEditor: FC<Props> = ({setContent, setImages}) => {
       </div>
     </div>
 
-		{isClient && <ImageGallery onImageUpload={setImagesHandler} visible={showImageGallery} onClose={setShowImageGallery} />}
+      {typeof window !== 'undefined' && <ImageGallery onImageUpload={setImagesHandler} visible={showImageGallery} onClose={setShowImageGallery} />}
 		
 	</div> 
   )
