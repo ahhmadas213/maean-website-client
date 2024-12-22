@@ -12,14 +12,14 @@ interface Props {
 
 const GalleryImage = ({src, onDeleteClick, onSelectClick}: Props) => {
 return (
-    <div className='w-full aspect-square overflow-hidden rounded relative'>
+    <div className='group w-full aspect-square overflow-hidden rounded relative'>
     <img
     alt='image'
     src={src}
-    className='w-full h-full object-cover'
+    className=' w-full h-full object-cover'
     />
 
-    <div className='flex w-full absolute bottom-0 right-0'>
+    <div className='hidden group-hover:flex w-full absolute bottom-0 right-0'>
 
         <button className='flex bg-red-400 flex-1  text-white items-center justify-center p-2  hover:bg-opacity-80' onClick={onDeleteClick}>
             <BiSolidTrash  />
@@ -29,8 +29,8 @@ return (
             <BiCheck  />
         </button>
     </div>
-  </div>
-  )
+</div>
+)
 }
 
 export default GalleryImage

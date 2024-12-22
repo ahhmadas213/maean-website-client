@@ -7,13 +7,14 @@ const ContentCreateForm = () => {
   const [title, setTitle] = useState<string>("")
   const [images, setImages] = useState<{ url: string; fileName: string }[]>([])
   console.log({content, title, images})
+  
   return (
-    <div>
-        <div className='container mx-auto w-full'>
-            <RichTextEditor setContent={setContent} setImages={setImages} />
-        </div>
+    <div className="h-screen flex items-center justify-center">
+      <div className="h-full ">
+        <RichTextEditor setContent={setContent} setImages={setImages} />
+      </div>
     </div>
   )
 }
 
-export default ContentCreateForm
+export default ContentCreateForm;

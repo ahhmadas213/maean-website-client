@@ -8,44 +8,21 @@ import {
   BiAlignLeft,
   BiAlignMiddle,
   BiAlignRight,
-    BiHeading,
-    BiImage
+  BiImage
 } from "react-icons/bi";
 import ToolButton from "./ToolButton";
-
 import { ChainedCommands, Editor } from "@tiptap/react";
 
 const tools = [
   {
-    task: "h1",
-    icon: <BiHeading size={20}/>,
-    label: "عنوان 1"
-  },
-  {
-    task: "h2",
-    icon: <BiHeading size={18}/>,
-    label: "عنوان 2"
-  },
-  {
-    task: "h3",
-    icon: <BiHeading size={16}/>,
-    label: "عنوان 3"
-  },
-  {
-    task: "h4",
-    icon: <BiHeading size={14}/>,
-    label: "عنوان 4"
-  },
-  {
     task: "bold",
     icon: <BiBold size={20}/>,
     label: "غامق",
-    
   },
   {
     task: "italic",
     icon: <BiItalic size={20}/>,
-    label: "مائل",
+    label: "مائل",
   },
   {
     task: "underline",
@@ -60,12 +37,12 @@ const tools = [
   {
     task: "bulletList",
     icon: <BiListUl size={20}/>,
-    label: "قائمة"
+    label: "قائمة"
   },
   {
     task: "orderedList",
     icon: <BiListOl size={20}/>,
-    label: "قائمة"
+    label: "قائمة"
   },
   {
     task: "right",
@@ -87,11 +64,18 @@ const tools = [
     icon: <BiImage size={20}/>,
     label: "صورة"
   }
-];
+] as const;
+
+const headOptions = [
+  {task: "p", label: "فقرة", value: 'Paragraph'},
+  { task: "h1", label: "كبير", value: 'Heading1' },
+  { task: "h2", label: "متوسط", value: 'Heading2' },
+  { task: "h3", label: "صغير", value: 'Heading3' },
+] as const;
 
 interface Props {
   editor: Editor | null;
-  onImageSelecttion?(): void
+  onImageSelecttion?(): void;
 }
 
 const chainMethod = (editor: Editor | null, command: (chain: ChainedCommands) => ChainedCommands) => {
@@ -102,14 +86,6 @@ const chainMethod = (editor: Editor | null, command: (chain: ChainedCommands) =>
 const Tools = ({ editor, onImageSelecttion }: Props) => {
   const getTaskHandler = (task: string) => {
     switch (task) {
-      case "h1":
-        return () => chainMethod(editor, (chain) => chain.toggleHeading({ level: 1 }));
-      case "h2":
-        return () => chainMethod(editor, (chain) => chain.toggleHeading({ level: 2 }));
-      case "h3":
-        return () => chainMethod(editor, (chain) => chain.toggleHeading({ level: 3 }));
-      case "h4":
-        return () => chainMethod(editor, (chain) => chain.toggleHeading({ level: 4 }));
       case "bold":
         return () => chainMethod(editor, (chain) => chain.toggleBold());
       case "italic":
@@ -172,8 +148,68 @@ const Tools = ({ editor, onImageSelecttion }: Props) => {
     }
   };
 
+  const handleHeadings : React.ChangeEventHandler<HTMLSelectElement> = ({ target }) => {
+    const { value } = target;
+    switch (value) {
+      case 'p':
+        chainMethod(editor, (chain) => chain.setParagraph());
+        break;
+      case 'h1':
+        return chainMethod(editor, (chain) => chain.toggleHeading({ level: 1 }));
+      case 'h2':
+        return chainMethod(editor, (chain) => chain.toggleHeading({ level: 2 }));
+      case 'h3':
+        return chainMethod(editor, (chain) => chain.toggleHeading({ level: 3 }));
+      default:
+        return chainMethod(editor, (chain) => chain.setParagraph());
+    }
+  };
+
+  const handleImageResize = (size: "small" | "medium" | "large") => {
+    if (!editor) return;
+    
+    const widthMap = {
+      small: 200,
+      medium: 400,
+      large: 600
+    };
+
+    const { selection } = editor.state;
+    const node = selection.$anchor.parent;
+    
+    if (node.type.name === 'image') {
+      editor.commands.updateAttributes('image', {
+        width: widthMap[size],
+        height: 'auto'
+      });
+    } else {
+      // If direct parent is not an image, look for nearest image node
+      editor.state.doc.descendants((node, pos) => {
+        if (node.type.name === 'image' && pos >= selection.from && pos <= selection.to) {
+          editor.chain()
+            .setNodeSelection(pos)
+            .updateAttributes('image', {
+              width: widthMap[size],
+              height: 'auto'
+            })
+            .run();
+          return false; // stop traversing
+        }
+      });
+    }
+  };
+
+
+  const getSelectedHeading = () => {
+      let result = 'p';
+      if (editor?.isActive('heading', { level: 1 })) result = 'h1';
+      if (editor?.isActive('heading', { level: 2 })) result = 'h2';
+      if (editor?.isActive('heading', { level: 3 })) result = 'h3';
+      return result;
+  };
+
   return (
-    <div className="flex flex-wrap gap-2 p-3" dir="rtl">
+    <div className="flex items-center justify-start flex-wrap gap-2 p-3" dir="rtl">
       {tools.map((tool) => (
         <ToolButton
           key={tool.task}
@@ -183,6 +219,34 @@ const Tools = ({ editor, onImageSelecttion }: Props) => {
           label={tool.label}
         />
       ))}
+
+      <select value={getSelectedHeading()}
+        className="border border-gray-300 rounded-md p-2"
+        onChange={handleHeadings}
+      >
+        {headOptions.map((option) => (
+          <option key={option.label} value={option.task}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+
+      {editor?.isActive("image") && (
+        <div className="flex items-center gap-2">
+          <label htmlFor="image-size" className="text-sm">
+            حجم الصورة:
+          </label>
+          <select 
+            id="image-size"
+            className="border border-gray-300 rounded-md p-2"
+            onChange={(e) => handleImageResize(e.target.value as "small" | "medium" | "large")}
+          >
+            <option value="small">صغير</option>
+            <option value="medium">متوسط</option>
+            <option value="large">كبير</option>
+          </select>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,20 +1,26 @@
 'use client'
-
 import React, { useState } from 'react'
 import { IoMdClose } from 'react-icons/io'
 import { FileUploader } from 'react-drag-drop-files'
 import { IoCloudUploadOutline } from 'react-icons/io5'
-import { uploadFile } from '@/app/actions/UploadFile'
+import { deleteImage, uploadFile } from '@/app/actions/file'
+import { useImages } from '@/app/context/ImageProvider'
+import GalleryImage from './GalleryImage'
 
 interface Props {
   visible: boolean
   onClose(state: boolean): void
   onImageUpload(files: { url: string; fileName: string }[]): void
+  onSelect?(image: {src: string, alt?: string}): void
 }
 
-const ImageGallery = ({ visible, onClose, onImageUpload }: Props) => {
+const ImageGallery = ({ visible, onClose, onImageUpload, onSelect,}: Props) => {
   const [isUploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const image = useImages()
+  const images = image?.images
+  const updateImages = image?.updateImages
+  const deleteOldImages = image?.deleteOldImages
 
   const handleOnClick = () => {
     onClose(!visible)
@@ -23,18 +29,44 @@ const ImageGallery = ({ visible, onClose, onImageUpload }: Props) => {
   const handleFileChange = async (file: File) => {
     setError(null)
     setUploading(true)
-    
+
     try {
       const formData = new FormData()
       formData.append('file', file)
-      
+
       const res = await uploadFile(formData)
-      onImageUpload([{ url: res, fileName: file.name }])
+      
+      if (res && updateImages) {
+        // res now contains both url and fileName
+        updateImages([{ url: res.url, fileName: res.fileName }])
+        onImageUpload([res])
+      }
     } catch (err) {
       console.error('Upload error:', err)
       setError(err instanceof Error ? err.message : 'Failed to upload file')
     } finally {
       setUploading(false)
+    }
+  }
+
+  const handleSelection = (image : { url: string; fileName: string }) => {
+    if (onSelect) {
+      onSelect({
+        src: image.url, 
+        alt: image.fileName 
+      });
+    }
+    onClose(!visible);
+  }
+
+  const hadleDelete = async (src: string) => {
+    if (deleteOldImages) {
+     const res = await deleteImage(src)
+     if (res && updateImages) {
+        updateImages([])
+        deleteOldImages(src)
+      }
+
     }
   }
 
@@ -69,7 +101,7 @@ const ImageGallery = ({ visible, onClose, onImageUpload }: Props) => {
                 <p className="mb-2 text-sm text-gray-500">
                   <span className="font-semibold"> اضافة صو,ة </span> / اسحب و افلت
                 </p>
-                <p className="text-xs text-gray-500">صور فقط  </p>
+                <p className="text-xs text-gray-500">صور فقط </p>
               </div>
             </label>
           </div>
@@ -81,14 +113,23 @@ const ImageGallery = ({ visible, onClose, onImageUpload }: Props) => {
           </div>
         )}
 
-        <div className='grid md:grid-cols-4 grid-cols-2 gap-4 mt-4'>
+        {images?.length === 0 && (
+          <div className="mt-4 p-3 bg-red-100 text-gray-400 rounded">
+            لا يوجد صور
+          </div>
+        )}
+
+        <div className='grid w-full md:grid-cols-4 grid-cols-2 gap-4 mt-4'>
           {isUploading && (
             <div className='w-full aspect-square rounded animate-pulse bg-gray-200'></div>
           )}
+
+          {images && images.map((image) => (
+            <GalleryImage key={image.fileName} onDeleteClick={() => hadleDelete(image.url)} onSelectClick={() => handleSelection(image)} src={image.url}/>
+          ))}
         </div>
       </div>
     </div>
   )
 }
-
 export default ImageGallery

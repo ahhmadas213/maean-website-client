@@ -9,6 +9,8 @@ import Placeholder from '@tiptap/extension-placeholder';
 import OrderedList from '@tiptap/extension-ordered-list'
 import Heading from '@tiptap/extension-heading'
 import ImageGallery from './rich-text-editor/ImageGallery';
+import Image from '@tiptap/extension-image'
+import "@/app/globals.css";
 
 const extensions = [StarterKit.configure({
   heading: false,
@@ -34,35 +36,40 @@ Heading.configure({
     dir: 'rtl',
     class: 'font-cairo',
   }
-})
+}),
+Image.configure({
+  inline: false,
+  allowBase64: true,
+  HTMLAttributes: {
+    class: 'resize-image',
+  },
+}),
 ]
 
 interface Props {
-    setContent(value: string): void
-    setImages(images: { url: string; fileName: string }[]): void
+    setContent(value: string): void
+    setImages(images: { url: string; fileName: string }[]): void
   }
-
 
 const RichTextEditor: FC<Props> = ({setContent, setImages}) => {
 
 	const [showImageGallery, setShowImageGallery] = useState(false);
-  
   const [uploadedImages, setUploadedImages] = useState<{ url: string; fileName: string }[]>([]);
-  
-  // Add an onUpdate handler to the editor configuration
-const editor = useEditor({
-  extensions,
-  editorProps: {
-   attributes: {
-    class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl focus:outline-none rtl prose-headings:font-cairo prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl prose-h4:text-xl',
-    dir: 'rtl',
-   },
- },
-  onUpdate: ({ editor }) => {
-   setContent(editor.getHTML());
-  }
- });
-  
+
+  const editor = useEditor({
+    extensions,
+    immediatelyRender: false,
+    editorProps: {
+      attributes: {
+        class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl focus:outline-none rtl prose-headings:font-cairo prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl prose-h4:text-xl h-full',
+        dir: 'rtl',
+      },
+    },
+    onUpdate: ({ editor }) => {
+      setContent(editor.getHTML());
+    }
+  });
+
   const setImagesHandler = (images: { url: string; fileName: string }[]) => {
     const newImages = [...uploadedImages, ...images];
     setUploadedImages(newImages);
@@ -70,11 +77,11 @@ const editor = useEditor({
   };
 
   const setContentHandler = () => {
-  if (editor) {
-    const content = editor.getHTML();
-    setContent(content);
-  }
-};
+    if (editor) {
+      const content = editor.getHTML();
+      setContent(content);
+    }
+  };
 
   useEffect(() => {
     return () => {
@@ -82,29 +89,35 @@ const editor = useEditor({
     };
   }, [editor]);
 
+  const onImageSelect = ({ src, alt }: { src: string; alt?: string }) => {
+    editor?.chain().focus().setImage({ src, alt }).run();
+    setShowImageGallery(false);
+  };
+
+
+
   return (
-	<div>
-  <div className='h-screen flex flex-col' dir="rtl">
+    <div className="h-screen flex items-center justify-center">
+    <div className="h-full w-full max-w-2xl mx-auto px-4 flex flex-col">
       <div className="sticky top-0 bg-white z-50 border-b">
-        <div className="max-w-4xl mx-auto w-full">
-          <Tools editor={editor} onImageSelecttion={() => setShowImageGallery(true)}/>
-        </div>
+        <Tools editor={editor} onImageSelecttion={() => setShowImageGallery(true)} />
       </div>
-      <div className="flex-1 ">
-        <div className="max-w-4xl mx-auto px-4">
-          <EditorContent 
-            onChange={setContentHandler}
-            editor={editor}
-            className="h-full [&_.is-editor-empty]:before:text-gray-400 [&_.is-editor-empty]:before:float-right [&_.is-editor-empty]:before:content-[attr(data-placeholder)] [&_.is-editor-empty]:before:pointer-events-none"
-          />
-        </div>
+      <div className="flex-1 flex">
+        <EditorContent
+          onChange={setContentHandler}
+          editor={editor}
+          className="h-full w-full [&_.is-editor-empty]:before:text-gray-400 [&_.is-editor-empty]:before:float-right [&_.is-editor-empty]:before:content-[attr(data-placeholder)] [&_.is-editor-empty]:before:pointer-events-none"
+        />
       </div>
     </div>
-
-      {typeof window !== 'undefined' && <ImageGallery onImageUpload={setImagesHandler} visible={showImageGallery} onClose={setShowImageGallery} />}
-		
-	</div> 
-  )
+    <ImageGallery
+      onImageUpload={setImagesHandler}
+      visible={showImageGallery}
+      onClose={setShowImageGallery}
+      onSelect={onImageSelect}
+    />
+  </div>
+  );
 }
 
-export default RichTextEditor
+export default RichTextEditor;
