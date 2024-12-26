@@ -1,11 +1,11 @@
 'use client'
 import React, { useState } from 'react'
 import { IoMdClose } from 'react-icons/io'
-import { FileUploader } from 'react-drag-drop-files'
 import { IoCloudUploadOutline } from 'react-icons/io5'
 import { deleteImage, uploadFile } from '@/app/actions/file'
 import { useImages } from '@/app/context/ImageProvider'
 import GalleryImage from './GalleryImage'
+import { FileUploader } from 'react-drag-drop-files'
 
 interface Props {
   visible: boolean
@@ -61,8 +61,8 @@ const ImageGallery = ({ visible, onClose, onImageUpload, onSelect,}: Props) => {
 
   const hadleDelete = async (src: string) => {
     if (deleteOldImages) {
-     const res = await deleteImage(src)
-     if (res && updateImages) {
+    const res = await deleteImage(src)
+    if (res && updateImages) {
         updateImages([])
         deleteOldImages(src)
       }

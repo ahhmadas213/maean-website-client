@@ -48,13 +48,13 @@ Image.configure({
 
 interface Props {
     setContent(value: string): void
-    setImages(images: { url: string; fileName: string }[]): void
   }
 
-const RichTextEditor: FC<Props> = ({setContent, setImages}) => {
+const RichTextEditor: FC<Props> = ({setContent}) => {
 
 	const [showImageGallery, setShowImageGallery] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<{ url: string; fileName: string }[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
 
   const editor = useEditor({
     extensions,
@@ -73,7 +73,6 @@ const RichTextEditor: FC<Props> = ({setContent, setImages}) => {
   const setImagesHandler = (images: { url: string; fileName: string }[]) => {
     const newImages = [...uploadedImages, ...images];
     setUploadedImages(newImages);
-    setImages(newImages);
   };
 
   const setContentHandler = () => {
@@ -83,17 +82,22 @@ const RichTextEditor: FC<Props> = ({setContent, setImages}) => {
     }
   };
 
-  useEffect(() => {
-    return () => {
-      editor?.destroy();
-    };
-  }, [editor]);
-
   const onImageSelect = ({ src, alt }: { src: string; alt?: string }) => {
     editor?.chain().focus().setImage({ src, alt }).run();
     setShowImageGallery(false);
   };
 
+
+
+// Modify useEffect
+useEffect(() => {
+  setIsMounted(true);
+  return () => editor?.destroy();
+}, [editor]);
+
+
+// Add check before return
+if (!isMounted) return null;
 
 
   return (
@@ -110,6 +114,8 @@ const RichTextEditor: FC<Props> = ({setContent, setImages}) => {
         />
       </div>
     </div>
+
+    {/* TODO fix image gallery bug */}
     <ImageGallery
       onImageUpload={setImagesHandler}
       visible={showImageGallery}
