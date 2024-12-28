@@ -8,6 +8,7 @@ export default {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+	
   	extend: {
   		colors: {
   			background: 'hsl(var(--background))',
@@ -65,12 +66,26 @@ export default {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
+		  animation: {
+        "loop-scroll": "loop-scroll 40s linear infinite",
+			scroll:
+			  "scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite",
+		  },
+		  keyframes: {
+        "loop-scroll": {
+			  from: { transform: "translateX(0)" },
+        to: { transform: "translateX(-100%)" },
+			},
+		  },
   	}
   },
   plugins: [
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     require('@tailwindcss/typography'),
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       require("tailwindcss-animate")
+	  
 ],
 } satisfies Config;
+

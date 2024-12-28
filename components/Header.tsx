@@ -4,6 +4,7 @@ import * as React from "react"
 import Link from "next/link"
 import { ChevronDownIcon, MenuIcon } from 'lucide-react'
 import Image from "next/image"
+import { motion } from "framer-motion"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -34,9 +35,11 @@ export function Header() {
   const [isMediaOpen, setIsMediaOpen] = React.useState(false)
 
   return (
-    <header className="bg-background/60 -mt-24 backdrop-blur-md z-50 sticky top-0">
+    <motion.header
+    initial={{ y: -100 }}
+    animate={{ y: 0 }} className=" -mt-24  z-50 sticky top-3">
       <nav
-        className="mx-auto flex max-w-7xl items-center justify-between p-4 lg:px-6"
+        className="md:mx-auto flex max-w-5xl mx-4 bg-background/60 backdrop-blur-md rounded-full items-center justify-between p-2 lg:px-6"
       >
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 flex gap-2 items-center justify-center text-white  p-1.5">
@@ -142,6 +145,6 @@ export function Header() {
           </div>
         </div>
       </nav>
-    </header>
+    </motion.header>
   )
 }

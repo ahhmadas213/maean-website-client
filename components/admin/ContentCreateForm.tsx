@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react'
-import DynamicRichTextEditor from './rich-text-editor/DynacmicEditor'
+import DynamicRichTextEditor from '../rich-text-editor/DynacmicEditor'
 
 const ContentCreateForm = () => {
   const [content, setContent] = useState<string>("")
@@ -9,7 +9,7 @@ const ContentCreateForm = () => {
   return (
     <div className="h-screen flex items-center justify-center">
       <div className="h-full ">
-       <DynamicRichTextEditor setContent={setContent} />
+      <DynamicRichTextEditor setContent={setContent} />
       </div>
     </div>
   )

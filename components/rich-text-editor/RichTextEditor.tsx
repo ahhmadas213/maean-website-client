@@ -2,13 +2,13 @@
 import React, { FC, useState, useEffect } from 'react'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit';
-import Tools from './rich-text-editor/Tools';
+import Tools from './Tools';
 import Underline from '@tiptap/extension-underline'
 import TextAlign from '@tiptap/extension-text-align'
 import Placeholder from '@tiptap/extension-placeholder';
 import OrderedList from '@tiptap/extension-ordered-list'
 import Heading from '@tiptap/extension-heading'
-import ImageGallery from './rich-text-editor/ImageGallery';
+import ImageGallery from './ImageGallery';
 import Image from '@tiptap/extension-image'
 import "@/app/globals.css";
 

@@ -1,6 +1,6 @@
 'use client'
 import dynamic from 'next/dynamic';
-import RichTextEditor from '../RichTextEditor';
+import RichTextEditor from './RichTextEditor';
 
 
 const DynamicRichTextEditor = dynamic(() => Promise.resolve(RichTextEditor), {
