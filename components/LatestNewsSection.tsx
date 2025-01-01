@@ -79,10 +79,10 @@ export default function LatestNewsSection() {
   const isInView = useInView(ref, { once: true, amount: 0.2 })
 
   return (
-    <section ref={ref} className="py-16 my-10 relative bg-white">
+    <section ref={ref} className="py-24 px-4 relative bg-primary_gray/20">
 
-      <div className="max-w-7xl relative mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionTitle title="اخبارنا" />
+      <div className="max-w-7xl relative mx-auto ">
+        <SectionTitle title="اخر الاخبار" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {newsItems.map((item, index) => (
             <motion.div
@@ -99,9 +99,9 @@ export default function LatestNewsSection() {
                     <Image
                       src="/initiatives/in2.jpg"
                       alt={item.title}
-                      layout="fill"
-                      objectFit="cover"
-                      className="transition-all duration-300 ease-in-out group-hover:opacity-75"
+                      width={500}
+                      height={300}
+                      className="transition-all w-full h-full object-cover duration-300 ease-in-out group-hover:opacity-75"
                     />
                   </div>
                   <div className="p-6">

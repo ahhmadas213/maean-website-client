@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import Link from "next/link"
 import { ChevronDownIcon, MenuIcon } from 'lucide-react'
 import Image from "next/image"
@@ -15,6 +14,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { useEffect, useState } from "react"
 
 const navigation = [
   { name: "الرئيسية", href: "/" },
@@ -27,25 +27,43 @@ const navigation = [
 const mediaItems = [
   { name: "الصور", href: "/media/photos" },
   { name: "الفيديوهات", href: "/media/videos" },
-  { name: "الاخبار", href: "/news" }, // Fixed the property name from 'namea' to 'name'
+  { name: "الاخبار", href: "/news" },
 ]
 
 export function Header() {
-  const [isOpen, setIsOpen] = React.useState(false)
-  const [isMediaOpen, setIsMediaOpen] = React.useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+  const [isMediaOpen, setIsMediaOpen] = useState(false)
+  const [isPastHero, setIsPastHero] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Assuming hero section height is 100vh (adjust this value based on your hero section height)
+      const heroHeight = window.innerHeight
+      setIsPastHero(window.scrollY > heroHeight)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    // Initial check
+    handleScroll()
+
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   return (
     <motion.header
     initial={{ y: -100 }}
-    animate={{ y: 0 }} className=" -mt-24  z-50 sticky top-3">
+    animate={{ y: 0 }} className=" fixed  z-50 w-full top-3">
       <nav
         className="md:mx-auto flex max-w-5xl mx-4 bg-background/60 backdrop-blur-md rounded-full items-center justify-between p-2 lg:px-6"
       >
         <div className="flex lg:flex-1">
-          <Link href="/" className="-m-1.5 flex gap-2 items-center justify-center text-white  p-1.5">
+          <Link href="/" className="-m-1.5 flex gap-2 items-center justify-center p-1.5">
             <Image className="h-12 w-auto"
             src="/logo.png" alt="فريق معاً التطوعي" width={150} height={50} />
-            <span className=" text-xl font-bold">فريق معاً التطوعي</span>
+            <span className={cn(
+              "text-xl font-bold transition-colors duration-300",
+              isPastHero ? "text-primary_blue" : "text-primary_gray"
+            )}>فريق معاً التطوعي</span>
           </Link>
         </div>
 

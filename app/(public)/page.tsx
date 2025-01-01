@@ -7,7 +7,7 @@ import SuccessPartnerSection from "@/components/SuccessPartnerSection";
 
 export default function Home() {
   return (
-    <div className="">
+    <div className="relative">
       <HeroSection />
       <InitiativesSection />
       {/* <StatisticsSection /> */}

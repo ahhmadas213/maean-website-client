@@ -30,7 +30,7 @@ const mediaItems = [
 ];
 const MediaSection = () => {
   return (
-    <section className="py-16 px-4 bg-gradient-to-b from-white to-primary_blue/10">
+    <section className="py-24 px-4 bg-gradient-to-b from-white to-primary_blue/10">
       <div className="max-w-7xl mx-auto relative">
         <SectionTitle title="معرض الوسائط" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

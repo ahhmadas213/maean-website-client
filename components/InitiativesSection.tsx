@@ -69,8 +69,8 @@ export default function InitiativesSection() {
   const isInView = useInView(ref, { once: true, amount: 0.2 })
 
   return (
-    <section ref={ref} className="py-16 my-10 bg-gray-100">
-      <div className="max-w-7xl mx-auto relative px-4 sm:px-6 lg:px-8">
+    <section ref={ref} className="py-24 px-4 bg-gray-100">
+      <div className="max-w-7xl mx-auto relative ">
         <SectionTitle title="المبادرات" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {initiatives.map((initiative, index) => (
@@ -86,8 +86,9 @@ export default function InitiativesSection() {
                 <Image
                   src="/initiatives/in1.jpg"
                   alt={initiative.title}
-                  layout="fill"
-                  objectFit="cover"
+                  width={500}
+                  height={300}
+                  className="transition-all w-full h-full object-cover duration-300 ease-in-out group-hover:opacity-75"
                 />
               </div>
               <div className="p-6 group">

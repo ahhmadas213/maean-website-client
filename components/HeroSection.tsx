@@ -53,10 +53,10 @@ export default function HeroSection() {
       <Image
         src="/hero_image_1.jpeg"
         alt="صورة خلفية للتطوع"
-        layout="fill"
-        objectFit="cover"
         quality={100}
-        className="absolute z-0"
+        width={600}
+        height={600}
+        className="absolute z-0 w-full h-full object-cover"
       />
       
       {/* Overlay */}
