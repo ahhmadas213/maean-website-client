@@ -25,7 +25,7 @@ const navigation = [
 ]
 
 const mediaItems = [
-  { name: "الصور", href: "/media/photos" },
+  { name: "الصور", href: "/media/images" },
   { name: "الفيديوهات", href: "/media/videos" },
   { name: "الاخبار", href: "/news" },
 ]

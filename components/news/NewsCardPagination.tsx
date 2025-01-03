@@ -66,7 +66,7 @@ export default function NewsCardPagination() {
         >
           <div className="relative w-full h-full">
             <Image
-              src={currentNews.imageUrl}
+              src={currentNews.images![0]}
               alt={currentNews.title}
               fill
               className={`object-cover transition-opacity duration-300 ${
